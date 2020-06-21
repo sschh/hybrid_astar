@@ -1,0 +1,7 @@
+<launch>
+ <!-- Turn on leinuo node -->
+ <node name="leinuo" pkg="leinuo" type="leinuo" output="screen"/> 
+ <node name="tf_broadcaster" pkg="leinuo" type="tf_broadcaster" />
+ <node name="map_server" pkg="map_server" type="map_server" args="$(find leinuo)/maps/map.yaml" />
+ <node name="rviz" pkg="rviz" type="rviz" args="-d $(find leinuo)/launch/config.rviz" />
+</launch>
