@@ -1,27 +1,8 @@
-// Copyright (c) 2008-2014, Andrew Walker
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 
 #ifndef DUBINS_CPP
 #define DUBINS_CPP
 
-#include "dubins.h"
+#include "reedsshepp.h"
 #define _USE_MATH_DEFINES // for C++
 #include <math.h>
 #include <assert.h>
@@ -52,13 +33,13 @@ const int DIRDATA[][3] = {
     { L_SEG, R_SEG, L_SEG }
 };
 
-DubinsWord dubins_words[] = {
-    dubins_LSL,
-    dubins_LSR,
-    dubins_RSL,
-    dubins_RSR,
-    dubins_RLR,
-    dubins_LRL,
+DubinsWord reedsshepp_words[] = {
+    reedsshepp_LSL,
+    reedsshepp_LSR,
+    reedsshepp_RSL,
+    reedsshepp_RSR,
+    reedsshepp_RLR,
+    reedsshepp_LRL,
 };
 
 #define UNPACK_INPUTS(alpha, beta)     \
@@ -88,7 +69,7 @@ double mod2pi( double theta )
     return fmodr( theta, 2 * M_PI );
 }
 
-int dubins_init_normalised( double alpha, double beta, double d, DubinsPath* path)
+int reedsshepp_init_normalised( double alpha, double beta, double d, DubinsPath* path)
 {
     double best_cost = INFINITY;
     int    best_word;
@@ -97,7 +78,7 @@ int dubins_init_normalised( double alpha, double beta, double d, DubinsPath* pat
     best_word = -1;
     for( i = 0; i < 6; i++ ) {
         double params[3];
-        int err = dubins_words[i](alpha, beta, d, params);
+        int err = reedsshepp_words[i](alpha, beta, d, params);
         if(err == EDUBOK) {
             double cost = params[0] + params[1] + params[2];
             if(cost < best_cost) {
@@ -118,7 +99,7 @@ int dubins_init_normalised( double alpha, double beta, double d, DubinsPath* pat
     return EDUBOK;
 }
 
-int dubins_init( double q0[3], double q1[3], double rho, DubinsPath* path )
+int reedsshepp_init( double q0[3], double q1[3], double rho, DubinsPath* path )
 {
     int i;
     double dx = q1[0] - q0[0];
@@ -136,10 +117,10 @@ int dubins_init( double q0[3], double q1[3], double rho, DubinsPath* path )
     }
     path->rho = rho;
 
-    return dubins_init_normalised( alpha, beta, d, path );
+    return reedsshepp_init_normalised( alpha, beta, d, path );
 }
 
-int dubins_LSL( double alpha, double beta, double d, double* outputs )
+int reedsshepp_LSL( double alpha, double beta, double d, double* outputs )
 {
     UNPACK_INPUTS(alpha, beta);
     double tmp0 = d+sa-sb;
@@ -155,7 +136,7 @@ int dubins_LSL( double alpha, double beta, double d, double* outputs )
     return EDUBOK;
 }
 
-int dubins_RSR( double alpha, double beta, double d, double* outputs )
+int reedsshepp_RSR( double alpha, double beta, double d, double* outputs )
 {
     UNPACK_INPUTS(alpha, beta);
     double tmp0 = d-sa+sb;
@@ -171,7 +152,7 @@ int dubins_RSR( double alpha, double beta, double d, double* outputs )
     return EDUBOK;
 }
 
-int dubins_LSR( double alpha, double beta, double d, double* outputs )
+int reedsshepp_LSR( double alpha, double beta, double d, double* outputs )
 {
     UNPACK_INPUTS(alpha, beta);
     double p_squared = -2 + (d*d) + (2*c_ab) + (2*d*(sa+sb));
@@ -186,7 +167,7 @@ int dubins_LSR( double alpha, double beta, double d, double* outputs )
     return EDUBOK;
 }
 
-int dubins_RSL( double alpha, double beta, double d, double* outputs )
+int reedsshepp_RSL( double alpha, double beta, double d, double* outputs )
 {
     UNPACK_INPUTS(alpha, beta);
     double p_squared = (d*d) -2 + (2*c_ab) - (2*d*(sa+sb));
@@ -201,7 +182,7 @@ int dubins_RSL( double alpha, double beta, double d, double* outputs )
     return EDUBOK;
 }
 
-int dubins_RLR( double alpha, double beta, double d, double* outputs )
+int reedsshepp_RLR( double alpha, double beta, double d, double* outputs )
 {
     UNPACK_INPUTS(alpha, beta);
     double tmp_rlr = (6. - d*d + 2*c_ab + 2*d*(sa-sb)) / 8.;
@@ -215,7 +196,7 @@ int dubins_RLR( double alpha, double beta, double d, double* outputs )
     return EDUBOK;
 }
 
-int dubins_LRL( double alpha, double beta, double d, double* outputs )
+int reedsshepp_LRL( double alpha, double beta, double d, double* outputs )
 {
     UNPACK_INPUTS(alpha, beta);
     double tmp_lrl = (6. - d*d + 2*c_ab + 2*d*(- sa + sb)) / 8.;
@@ -229,7 +210,7 @@ int dubins_LRL( double alpha, double beta, double d, double* outputs )
     return EDUBOK;
 }
 
-double dubins_path_length( DubinsPath* path )
+double reedsshepp_path_length( DubinsPath* path )
 {
     double length = 0.;
     length += path->param[0];
@@ -239,11 +220,11 @@ double dubins_path_length( DubinsPath* path )
     return length;
 }
 
-int dubins_path_type( DubinsPath* path ) {
+int reedsshepp_path_type( DubinsPath* path ) {
     return path->type;
 }
 
-void dubins_segment( double t, double qi[3], double qt[3], int type)
+void reedsshepp_segment( double t, double qi[3], double qt[3], int type)
 {
     assert( type == L_SEG || type == S_SEG || type == R_SEG );
 
@@ -264,9 +245,9 @@ void dubins_segment( double t, double qi[3], double qt[3], int type)
     }
 }
 
-int dubins_path_sample( DubinsPath* path, double t, double q[3] )
+int reedsshepp_path_sample( DubinsPath* path, double t, double q[3] )
 {
-    if( t < 0 || t >= dubins_path_length(path) ) {
+    if( t < 0 || t >= reedsshepp_path_length(path) ) {
         // error, parameter out of bounds
         return EDUBPARAM;
     }
@@ -293,16 +274,16 @@ int dubins_path_sample( DubinsPath* path, double t, double q[3] )
     double p2 = path->param[1];
     double q1[3]; // end-of segment 1
     double q2[3]; // end-of segment 2
-    dubins_segment( p1,      qi,    q1, types[0] );
-    dubins_segment( p2,      q1,    q2, types[1] );
+    reedsshepp_segment( p1,      qi,    q1, types[0] );
+    reedsshepp_segment( p2,      q1,    q2, types[1] );
     if( tprime < p1 ) {
-        dubins_segment( tprime, qi, q, types[0] );
+        reedsshepp_segment( tprime, qi, q, types[0] );
     }
     else if( tprime < (p1+p2) ) {
-        dubins_segment( tprime-p1, q1, q,  types[1] );
+        reedsshepp_segment( tprime-p1, q1, q,  types[1] );
     }
     else {
-        dubins_segment( tprime-p1-p2, q2, q,  types[2] );
+        reedsshepp_segment( tprime-p1-p2, q2, q,  types[2] );
     }
 
     // scale the target configuration, translate back to the original starting point
@@ -313,13 +294,13 @@ int dubins_path_sample( DubinsPath* path, double t, double q[3] )
     return 0;
 }
 
-int dubins_path_sample_many( DubinsPath* path, DubinsPathSamplingCallback cb, double stepSize, void* user_data )
+int reedsshepp_path_sample_many( DubinsPath* path, DubinsPathSamplingCallback cb, double stepSize, void* user_data )
 {
     double x = 0.0;
-    double length = dubins_path_length(path);
+    double length = reedsshepp_path_length(path);
     while( x <  length ) {
         double q[3];
-        dubins_path_sample( path, x, q );
+        reedsshepp_path_sample( path, x, q );
         int retcode = cb(q, x, user_data);
         if( retcode != 0 ) {
             return retcode;
@@ -329,13 +310,13 @@ int dubins_path_sample_many( DubinsPath* path, DubinsPathSamplingCallback cb, do
     return 0;
 }
 
-int dubins_path_endpoint( DubinsPath* path, double q[3] )
+int reedsshepp_path_endpoint( DubinsPath* path, double q[3] )
 {
     // TODO - introduce a new constant rather than just using EPSILON
-    return dubins_path_sample( path, dubins_path_length(path) - EPSILON, q );
+    return reedsshepp_path_sample( path, reedsshepp_path_length(path) - EPSILON, q );
 }
 
-int dubins_extract_subpath( DubinsPath* path, double t, DubinsPath* newpath )
+int reedsshepp_extract_subpath( DubinsPath* path, double t, DubinsPath* newpath )
 {
     // calculate the true parameter
     double tprime = t / path->rho;

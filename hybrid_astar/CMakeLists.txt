@@ -27,7 +27,7 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/node3d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/collisiondetection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/path.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/dubins.cpp 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/reedsshepp.cpp 
     )
 set(HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/algorithm.h
@@ -36,9 +36,13 @@ set(HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/collisiondetection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/path.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/constants.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/dubins.h 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/reedsshepp.h 
     )
 add_library(HYAS ${SOURCES} ${HEADERS})
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/cJSON/)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/cJSON)
+#target_link_libraries(./include/cJSON ${catkin_LIBRARIES})
 
 ## Declare a catkin package
 catkin_package()

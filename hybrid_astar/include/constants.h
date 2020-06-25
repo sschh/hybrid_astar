@@ -57,15 +57,15 @@ static const bool visualization2D = false && manual;
 /// A flag to toggle reversing (true = on; false = off)
 static const bool reverse = true;
 /// A flag to toggle the connection of the path via Dubin's shot (true = on; false = off)
-static const bool dubinsShot = true;
+static const bool reedssheppShot = true;
 /// A flag to toggle the Dubin's heuristic, this should be false, if reversing is enabled (true = on; false = off)
 static const bool dubins = false;
 /*!
-   \var static const bool dubinsLookup
+   \var static const bool reedssheppLookup
    \brief A flag to toggle the Dubin's heuristic via lookup, potentially speeding up the search by a lot
    \todo not yet functional
 */
-static const bool dubinsLookup = false && dubins;
+static const bool reedssheppLookup = false && dubins;
 /// A flag to toggle the 2D heuristic (true = on; false = off)
 static const bool twoD = true;
 
@@ -92,6 +92,8 @@ static const float deltaHeadingRad = 2 * M_PI / (float)headings;
 static const float deltaHeadingNegRad = 2 * M_PI - deltaHeadingRad;
 /// [m] --- The cell size of the 2D grid of the world
 static const float cellSize = 1;
+///[m]---target coordinate accuracy 
+static const float XYaccuracy= 0.1;
 /*!
   \brief [m] --- The tie breaker breaks ties between nodes expanded in the same cell
 
@@ -113,18 +115,18 @@ static const float penaltyReversing = 2.0;
 /// [#] --- A movement cost penalty for change of direction (changing from primitives < 3 to primitives > 2)
 static const float penaltyCOD = 2.0;
 /// [m] --- The distance to the goal when the analytical solution (Dubin's shot) first triggers
-static const float dubinsShotDistance = 100;
+static const float reedssheppShotDistance = 100;
 /// [m] --- The step size for the analytical solution (Dubin's shot) primarily relevant for collision checking
-static const float dubinsStepSize = 1;
+static const float reedssheppStepSize = 1;
 
 
 // ______________________
 // DUBINS LOOKUP SPECIFIC
 
-/// [m] --- The width of the dubinsArea / 2 for the analytical solution (Dubin's shot)
-static const int dubinsWidth = 15;
+/// [m] --- The width of the reedssheppArea / 2 for the analytical solution (Dubin's shot)
+static const int reedssheppWidth = 15;
 /// [m] --- The area of the lookup for the analytical solution (Dubin's shot)
-static const int dubinsArea = dubinsWidth * dubinsWidth;
+static const int reedssheppArea = reedssheppWidth * reedssheppWidth;
 
 
 // _________________________

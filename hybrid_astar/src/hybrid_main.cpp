@@ -1,12 +1,9 @@
-//###################################################
-//                      HYBRID A* ALGORITHM
-//  AUTHOR:   Karl Kurzer
-//  WRITTEN:  2015-03-02
-//###################################################
 #include <iostream>
 #include <ctime>
 #include <cmath>
 #include <string>
+#include <stdio.h>
+#include <stdlib.h>
 #include <fstream>
 #include <ros/ros.h>
 #include <tf/transform_datatypes.h>
@@ -14,8 +11,9 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 
-//#include "json.hpp"
+#include "cJSON/cJSON.h"
 #include <math.h>
+
 #include "collisiondetection.h"
 #include "algorithm.h"
 #include "node2d.h"
@@ -188,7 +186,7 @@ void Planner::plan() {
     //x = start.pose.pose.position.x / Constants::cellSize;
     //y = start.pose.pose.position.y / Constants::cellSize;
     //t = tf::getYaw(start.pose.pose.orientation);
-    x = 48 / Constants::cellSize;
+    x = 48/ Constants::cellSize;
     y = 14 / Constants::cellSize;
     t = 1;
     // set theta to a value (0,2PI]
@@ -222,9 +220,49 @@ void Planner::plan() {
 
   //}
 }
-
-
+/*
+void doit(char *text)
+{
+	char *out;cJSON *json;
+	
+	json=cJSON_Parse(text);
+	if (!json) {std::cout<<"Error "<<std::endl;}
+	else
+	{
+		out=cJSON_Print(json);
+		cJSON_Delete(json);
+		std::cout<<out<<std::endl;
+		free(out);
+	}
+}
+*/
 int main(int argc, char** argv) {
+  /*
+  char *file="/home/ssc/leinuo/src/hybrid_astar/maps/map.json";
+  //ifstream ifs; 
+  FILE *f;long len;char *data;
+	
+	f=fopen(file,"rb");
+  if (!f){
+    std::cout<<"path error!"<<endl;
+    return 0;
+  }
+  fseek(f,0,SEEK_END);len=ftell(f);fseek(f,0,SEEK_SET);
+	data=(char*)malloc(len+1);fread(data,1,len,f);fclose(f);
+	doit(data);
+	free(data);
+  */
+  //ifs.open( const_cast<char *>(file.c_str()));
+  //root=(char*)malloc(sizeof(char)*ftell(fp))
+  //cJSON *json=cJSON_Parse(root);
+  //if (!json){
+   // std::cout<<"file invalid!"<<endl;
+   // return 0;
+ // }
+  //free(root);
+  //int width=cJSON_GetObjectItem(json,'width')->valueint;
+  //std::cout<<width<<endl;
+ // std::cout<<root["data"].asInt()<<endl;
   //std::ifstream input("../map/map.json");
   //json inputjson;
   //input>>inputjson;
@@ -233,7 +271,7 @@ int main(int argc, char** argv) {
   ros::init(argc, argv, "a_star");
   Planner hy;
   hy.plan(); 
-
-  //ros::spin();
+  
+  ros::spin();
   return 0;
 }

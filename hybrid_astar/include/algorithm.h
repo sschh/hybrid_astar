@@ -8,7 +8,7 @@
 
 typedef ompl::base::SE2StateSpace::StateType State;
 
-#include "dubins.h"
+#include "reedsshepp.h"
 #include "node3d.h"
 #include "node2d.h"
 #include "collisiondetection.h"
@@ -36,7 +36,7 @@ class Algorithm {
      \param width the width of the grid in number of cells
      \param height the height of the grid in number of cells
      \param configurationSpace the lookup of configurations and their spatial occupancy enumeration
-     \param dubinsLookup the lookup of analytical solutions (Dubin's paths)
+     \param reedssheppLookup the lookup of analytical solutions (Dubin's paths)
      \param visualization the visualization object publishing the search to RViz
      \return the pointer to the node satisfying the goal condition
   */

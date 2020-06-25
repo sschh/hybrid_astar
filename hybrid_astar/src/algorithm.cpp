@@ -6,7 +6,7 @@ using namespace HybridAStar;
 
 float aStar(Node2D& start, Node2D& goal, Node2D* nodes2D, int width, int height, CollisionDetection& configurationSpace);
 void updateH(Node3D& start, const Node3D& goal, Node2D* nodes2D, int width, int height, CollisionDetection& configurationSpace);
-Node3D* dubinsShot(Node3D& start, const Node3D& goal, CollisionDetection& configurationSpace);
+Node3D* reedssheppShot(Node3D& start, const Node3D& goal, CollisionDetection& configurationSpace);
 
 //###################################################
 //                                    NODE COMPARISON
@@ -98,15 +98,18 @@ Node3D* Algorithm::hybridAStar(Node3D& start,
       else {
         // _______________________
         // SEARCH WITH DUBINS SHOT
-        if (Constants::dubinsShot && nPred->isInRange(goal) && nPred->getPrim() < 3) {
-          nSucc = dubinsShot(*nPred, goal, configurationSpace);
+        
+        if (Constants::reedssheppShot && nPred->isInRange(goal) && nPred->getPrim() < 3) {
+          nSucc = reedssheppShot(*nPred, goal, configurationSpace);
+          std::cout<<"Iterations: "<<iterations<<"      "<<nSucc->getX()<<"  "<<nSucc->getY()<<"  "<<nSucc->getT()<<std::endl;
           if (nSucc != nullptr && *nSucc == goal) {
             //DEBUG
             // std::cout << "max diff " << max << std::endl;
-            std::cout<<"Iterations: "<<iterations<<std::endl;
+            //std::cout<<"Iterations: "<<iterations<<std::endl;
             return nSucc;
           }
         }
+        
         // ______________________________
         // SEARCH WITH FORWARD SIMULATION
         for (int i = 0; i < dir; i++) {
@@ -165,10 +168,10 @@ Node3D* Algorithm::hybridAStar(Node3D& start,
 }
 
 //###################################################
-//                                        DUBINS SHOT
+//                                        REEDSSHEPP SHOT
 //###################################################
 
-Node3D* dubinsShot(Node3D& start, const Node3D& goal, CollisionDetection& configurationSpace) {
+Node3D* reedssheppShot(Node3D& start, const Node3D& goal, CollisionDetection& configurationSpace) {
   // start
   double q0[] = { start.getX(), start.getY(), start.getT() };
   // goal
@@ -176,66 +179,66 @@ Node3D* dubinsShot(Node3D& start, const Node3D& goal, CollisionDetection& config
   // initialize the path
   DubinsPath path;
   // calculate the path
-  dubins_init(q0, q1, Constants::r, &path);
+  reedsshepp_init(q0, q1, Constants::r, &path);
 
   int i = 0;
   float x = 0.f;
-  float length = dubins_path_length(&path);
+  float length = reedsshepp_path_length(&path);
 
-  Node3D* dubinsNodes = new Node3D [(int)(length / Constants::dubinsStepSize) + 1];
+  Node3D* reedssheppNodes = new Node3D [(int)(length / Constants::reedssheppStepSize) + 1];
   while (x <  length) {
     double q[3];
-    dubins_path_sample(&path, x, q);
-    dubinsNodes[i].setX(q[0]);
-    dubinsNodes[i].setY(q[1]);
-    dubinsNodes[i].setT(Constants::normalizeHeadingRad(q[2]));
+    reedsshepp_path_sample(&path, x, q);
+    reedssheppNodes[i].setX(q[0]);
+    reedssheppNodes[i].setY(q[1]);
+    reedssheppNodes[i].setT(Constants::normalizeHeadingRad(q[2]));
     // collision check
-    if (configurationSpace.isTraversable(&dubinsNodes[i])) {
+    if (configurationSpace.isTraversable(&reedssheppNodes[i])) {
       // set the predecessor to the previous step
       if (i > 0) {
-        dubinsNodes[i].setPred(&dubinsNodes[i - 1]);
+        reedssheppNodes[i].setPred(&reedssheppNodes[i - 1]);
       } else {
-        dubinsNodes[i].setPred(&start);
+        reedssheppNodes[i].setPred(&start);
       }
 
-      if (&dubinsNodes[i] == dubinsNodes[i].getPred()) {
+      if (&reedssheppNodes[i] == reedssheppNodes[i].getPred()) {
         std::cout << "looping shot";
       }
 
-      x += Constants::dubinsStepSize;
+      x += Constants::reedssheppStepSize;
       i++;
     } else {
       //      std::cout << "Dubins shot collided, discarding the path" << "\n";
       // delete all nodes
-      delete [] dubinsNodes;
+      delete [] reedssheppNodes;
       return nullptr;
     }
   }
   //std::cout << "path_length:" << length <<std::endl;
   //std::cout << "Dubins shot connected, returning the path" << "\n";
-  return &dubinsNodes[i - 1];
+  return &reedssheppNodes[i - 1];
 }
 
 //###################################################
 //                                         COST TO GO
 //###################################################
 void updateH(Node3D& start, const Node3D& goal, Node2D* nodes2D, int width, int height, CollisionDetection& configurationSpace) {
-  float dubinsCost = 0;
+  float reedssheppCost = 0;
   float reedsSheppCost = 0;
   float twoDCost = 0;
   float twoDoffset = 0;
 
-  // if dubins heuristic is activated calculate the shortest path
+  // if reedsshepp heuristic is activated calculate the shortest path
   // constrained without obstacles
   if (Constants::dubins) {
-    ompl::base::DubinsStateSpace dubinsPath(Constants::r);
-    State* dbStart = (State*)dubinsPath.allocState();
-    State* dbEnd = (State*)dubinsPath.allocState();
+    ompl::base::DubinsStateSpace reedssheppPath(Constants::r);
+    State* dbStart = (State*)reedssheppPath.allocState();
+    State* dbEnd = (State*)reedssheppPath.allocState();
     dbStart->setXY(start.getX(), start.getY());
     dbStart->setYaw(start.getT());
     dbEnd->setXY(goal.getX(), goal.getY());
     dbEnd->setYaw(goal.getT());
-    dubinsCost = dubinsPath.distance(dbStart, dbEnd);
+    reedssheppCost = reedssheppPath.distance(dbStart, dbEnd);
   }
 
   // if reversing is active use a
@@ -274,7 +277,7 @@ void updateH(Node3D& start, const Node3D& goal, Node2D* nodes2D, int width, int 
   }
 
   // return the maximum of the heuristics, making the heuristic admissable
-  start.setH(std::max(reedsSheppCost, std::max(dubinsCost, twoDCost)));
+  start.setH(std::max(reedsSheppCost, std::max(reedssheppCost, twoDCost)));
 }
 
 //###################################################

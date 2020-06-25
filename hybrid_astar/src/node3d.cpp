@@ -39,7 +39,7 @@ bool Node3D::isInRange(const Node3D& goal) const {
   int random = rand() % 10 + 1;
   float dx = std::abs(x - goal.x) / random;
   float dy = std::abs(y - goal.y) / random;
-  return (dx * dx) + (dy * dy) < Constants::dubinsShotDistance;
+  return (dx * dx) + (dy * dy) < Constants::reedssheppShotDistance;
 }
 
 //###################################################
@@ -106,8 +106,5 @@ void Node3D::updateG() {
 //                                 3D NODE COMPARISON
 //###################################################
 bool Node3D::operator == (const Node3D& rhs) const {
-  return (int)x == (int)rhs.x &&
-         (int)y == (int)rhs.y &&
-         (std::abs(t - rhs.t) <= Constants::deltaHeadingRad ||
-          std::abs(t - rhs.t) >= Constants::deltaHeadingNegRad);
-}
+  return  std::abs(x - rhs.x) < Constants::XYaccuracy && std::abs(y - rhs.y) < Constants::XYaccuracy && (std::abs(t - rhs.t) <= Constants::deltaHeadingRad || std::abs(t - rhs.t) >= Constants::deltaHeadingNegRad);
+}//(int)x == (int)rhs.x &&
