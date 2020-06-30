@@ -21,6 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
     tf
     )
 
+
 set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/algorithm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/node2d.cpp
@@ -35,14 +36,11 @@ set(HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/node3d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/collisiondetection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/path.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/cJSON/cJSON.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/reedsshepp.h 
     )
 add_library(HYAS ${SOURCES} ${HEADERS})
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/cJSON/)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/include/cJSON)
-#target_link_libraries(./include/cJSON ${catkin_LIBRARIES})
 
 ## Declare a catkin package
 catkin_package()
@@ -56,14 +54,18 @@ endif(NOT OMPL_FOUND)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 include_directories(include ${OMPL_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/cJSON/)
 include_directories(include include)
+add_subdirectory(./include/cJSON)
 
 #add_executable(tf_broadcaster src/tf_broadcaster.cpp)
 #target_link_libraries(tf_broadcaster ${catkin_LIBRARIES})
 
-add_executable(leinuo src/hybrid_main.cpp ${HEADERS} ${SOURCES})
-target_link_libraries(leinuo ${catkin_LIBRARIES})
-target_link_libraries(leinuo ${OMPL_LIBRARIES})
+aux_source_directory(. DIR_SRCS)
+add_executable(leinuo src/hybrid_main.cpp ${HEADERS} ${SOURCES} ${DIR_SRCS})
+target_link_libraries(leinuo ${catkin_LIBRARIES} ${OMPL_LIBRARIES} cJson)
+#target_link_libraries(leinuo ${OMPL_LIBRARIES})
+#target_link_libraries(cJson)
 
 #install(TARGETS ${PROJECT_NAME} tf_broadcaster
 #    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

@@ -220,7 +220,7 @@ void Planner::plan() {
 
   //}
 }
-/*
+
 void doit(char *text)
 {
 	char *out;cJSON *json;
@@ -229,15 +229,15 @@ void doit(char *text)
 	if (!json) {std::cout<<"Error "<<std::endl;}
 	else
 	{
-		out=cJSON_Print(json);
-		cJSON_Delete(json);
-		std::cout<<out<<std::endl;
-		free(out);
+		//out=cJSON_Print(json);
+		//cJSON_Delete(json);
+    float out=cJSON_GetObjectItem(json,"width")->valuedouble;
+		std::cout<<"width:  "<<out<<std::endl;
 	}
 }
-*/
+
 int main(int argc, char** argv) {
-  /*
+  
   char *file="/home/ssc/leinuo/src/hybrid_astar/maps/map.json";
   //ifstream ifs; 
   FILE *f;long len;char *data;
@@ -251,7 +251,7 @@ int main(int argc, char** argv) {
 	data=(char*)malloc(len+1);fread(data,1,len,f);fclose(f);
 	doit(data);
 	free(data);
-  */
+  
   //ifs.open( const_cast<char *>(file.c_str()));
   //root=(char*)malloc(sizeof(char)*ftell(fp))
   //cJSON *json=cJSON_Parse(root);
@@ -268,10 +268,10 @@ int main(int argc, char** argv) {
   //input>>inputjson;
   //inputjson['data'];
   //std::cout>>grid_width>>endl;
-  ros::init(argc, argv, "a_star");
-  Planner hy;
-  hy.plan(); 
+  //ros::init(argc, argv, "a_star");
+  //Planner hy;
+  //hy.plan(); 
   
-  ros::spin();
+  //ros::spin();
   return 0;
 }
