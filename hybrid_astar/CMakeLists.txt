@@ -23,6 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 
 set(SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/Input.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/algorithm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/node2d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/node3d.cpp
@@ -31,6 +32,7 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/reedsshepp.cpp 
     )
 set(HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/Input.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/algorithm.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/node2d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/node3d.h

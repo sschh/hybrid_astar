@@ -6,6 +6,7 @@
 #include "constants.h"
 #include "node2d.h"
 #include "node3d.h"
+#include "Input.h"
 
 namespace HybridAStar {
   
@@ -55,7 +56,7 @@ class CollisionDetection {
     getConfiguration(node, x, y, t);
     // 2D collision test
     if (t == 99) {
-      return !Constants::grid_data[node->getIdx()];
+      return !Input::getInstance()->grid_data[node->getIdx()];
     }
 
     cost = configurationTest(x, y, t) ? 0 : 1;

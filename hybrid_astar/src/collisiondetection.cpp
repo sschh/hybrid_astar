@@ -290,11 +290,12 @@ bool CollisionDetection::configurationTest(float x, float y, float t) {
     cY = (Y + collisionLookup[idx].pos[i].y);
 
     // make sure the configuration coordinates are actually on the grid
-    if (cX >= 0 && (unsigned int)cX < Constants::grid_width && cY >= 0 && (unsigned int)cY < Constants::grid_height) {
-      if (Constants::grid_data[cY * (int)Constants::grid_width + cX]) {
+    if (cX >= 0 && (unsigned int)cX <Input::getInstance()->grid_width && cY >= 0 && (unsigned int)cY < Input::getInstance()->grid_height) {
+      if (Input::getInstance()->grid_data[cY * (int)Input::getInstance()->grid_width + cX]) {
         return false;
       }
     }
+    
   }
 
   return true;

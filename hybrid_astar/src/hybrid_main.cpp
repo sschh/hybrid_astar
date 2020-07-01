@@ -14,11 +14,13 @@
 #include "cJSON/cJSON.h"
 #include <math.h>
 
+#include "Input.h"
 #include "collisiondetection.h"
 #include "algorithm.h"
 #include "node2d.h"
 #include "node3d.h"
 #include "path.h"
+
 
 using namespace std;
 using namespace HybridAStar;
@@ -160,8 +162,8 @@ void Planner::plan() {
   //if (validStart && validGoal) {
 
     // LISTS ALLOWCATED ROW MAJOR ORDER
-    int width = Constants::grid_width;//grid->info.width;
-    int height = Constants::grid_height;//grid->info.height;
+    int width = Input::getInstance()->grid_width;//grid->info.width;
+    int height =Input::getInstance()->grid_height;//grid->info.height;
     int depth = Constants::headings;
     //std::cout << "width,height,depth: " << width << height << depth << std::endl;
 
@@ -221,57 +223,15 @@ void Planner::plan() {
   //}
 }
 
-void doit(char *text)
-{
-	char *out;cJSON *json;
-	
-	json=cJSON_Parse(text);
-	if (!json) {std::cout<<"Error "<<std::endl;}
-	else
-	{
-		//out=cJSON_Print(json);
-		//cJSON_Delete(json);
-    float out=cJSON_GetObjectItem(json,"width")->valuedouble;
-		std::cout<<"width:  "<<out<<std::endl;
-	}
-}
-
 int main(int argc, char** argv) {
-  
-  char *file="/home/ssc/leinuo/src/hybrid_astar/maps/map.json";
-  //ifstream ifs; 
-  FILE *f;long len;char *data;
-	
-	f=fopen(file,"rb");
-  if (!f){
-    std::cout<<"path error!"<<endl;
-    return 0;
-  }
-  fseek(f,0,SEEK_END);len=ftell(f);fseek(f,0,SEEK_SET);
-	data=(char*)malloc(len+1);fread(data,1,len,f);fclose(f);
-	doit(data);
-	free(data);
-  
-  //ifs.open( const_cast<char *>(file.c_str()));
-  //root=(char*)malloc(sizeof(char)*ftell(fp))
-  //cJSON *json=cJSON_Parse(root);
-  //if (!json){
-   // std::cout<<"file invalid!"<<endl;
-   // return 0;
- // }
-  //free(root);
-  //int width=cJSON_GetObjectItem(json,'width')->valueint;
-  //std::cout<<width<<endl;
- // std::cout<<root["data"].asInt()<<endl;
-  //std::ifstream input("../map/map.json");
-  //json inputjson;
-  //input>>inputjson;
-  //inputjson['data'];
-  //std::cout>>grid_width>>endl;
+
+  std::cout<<"grid_width: "<<Input::getInstance()->grid_width<<endl;
+  std::cout<<"grid_height: "<<Input::getInstance()->grid_height<<endl;
+  std::cout<<"grid_data: \n"<<Input::getInstance()->grid_data[2]<<endl;
   //ros::init(argc, argv, "a_star");
   //Planner hy;
   //hy.plan(); 
-  
+  delete []Input::getInstance()->grid_data;
   //ros::spin();
   return 0;
 }
