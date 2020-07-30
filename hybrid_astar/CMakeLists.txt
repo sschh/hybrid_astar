@@ -29,6 +29,8 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/node3d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/collisiondetection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/path.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/planner.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/trajectory_controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/reedsshepp.cpp 
     )
 set(HEADERS
@@ -38,6 +40,8 @@ set(HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/node3d.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/collisiondetection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/path.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/planner.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/include/trajectory_controller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/cJSON/cJSON.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/reedsshepp.h 

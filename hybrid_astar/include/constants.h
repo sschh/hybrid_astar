@@ -92,9 +92,13 @@ static const float deltaHeadingNegRad = 2 * M_PI - deltaHeadingRad;
 static const float cellSize = 1;
 ///[m]---target coordinate accuracy 
 static const float XYaccuracy= 0.1;
+
+static const float acceleration= 1.0;//  m/s2
+/// [m] --- The number of discretizations in heading
+static const float maxSpeed =6; //  m/s
+
 /*!
   \brief [m] --- The tie breaker breaks ties between nodes expanded in the same cell
-
 
   As the cost-so-far are bigger than the cost-to-come it is reasonbale to believe that the algorithm would prefer the predecessor rather than the successor.
   This would lead to the fact that the successor would never be placed and the the one cell could only expand one node. The tieBreaker artificially increases the cost of the predecessor
