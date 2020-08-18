@@ -48,14 +48,14 @@ namespace HybridAStar
 
 			double x0, y0, Wheel_angle0, head_angle0;
 			double v0 = 0; 
-			x0 = localization->pose().position().x();//车辆初始utm坐标位置
-			y0 = localization->pose().position().y();
+			x0 =planner->resultpath[0].getX();//车辆初始utm坐标位置
+			y0 =planner->resultpath[0].getY();
 			std::cout << " vehicle x0 and y0 is  " << std::setprecision(12) << x0 << "  " << std::setprecision(12) << y0<<std::endl;//打印日志作用，用于调试
 			std::cout<<"beta wheelanglecom is "<<beta_Wheel_angle_com<<std::endl;
 			std::cout << " vehicle x0 and y0 is  " << std::setprecision(12) << x0 << "  " << std::setprecision(12) << y0<<std::endl;
 			Wheel_angle0 =chassis->steering_percentage()/100*470/Steer_Ratio*M_PI/180;//获取车辆前轮偏角（弧度
 			std::cout<<"wheel angle0 is"<<Wheel_angle0<<std::endl;
-			v0 = path_speed[0];//车辆速度
+			v0 =classis->speed_mps();//车辆速度
 
 			if (v0 < 1)//保证起步时的稳定性，所以降低起步时的最大加速度、最大前轮偏角
 			{
@@ -64,17 +64,17 @@ namespace HybridAStar
 			}
 			std::cout << " vehicle v0 speed" << std::setprecision(12) << v0<<std::endl;
 
-			int size =target_tracking_trajectory.trajectory_point().size();//获取轨迹点的个数
+			int size =planner->node_nums;//获取轨迹点的个数
 			//target_tracking_trajectory.trajectory_point(0).path_point().x()    为第0个轨迹点的x（x为utm坐标系，可类比为全局坐标系）
 			//target_tracking_trajectory.trajectory_point(0).path_point().y()    为第0个轨迹点的y（y为utm坐标系，可类比为全局坐标系）
 			
 			//找到最近的点
-			double min_distance = pow((x0 -target_tracking_trajectory.trajectory_point(0).path_point().x()), 2) + pow((y0 -target_tracking_trajectory.trajectory_point(0).path_point().y()), 2);
+			double min_distance = pow((x0 -planner->resultpath[0].getX()), 2) + pow((y0 -planner->resultpath[0].getY()), 2);
 			int index = 0; //轨迹点中距离车辆位置最近的点的索引
 			for (int i = 0; i < size; i++)
 			{
-				double distance = pow((x0 -target_tracking_trajectory.trajectory_point(i).path_point().x()), 2) + pow((y0 -target_tracking_trajectory.trajectory_point(i).path_point().y()), 2);
-				std::cout<< "index:"<<i<<" y is "<<target_tracking_trajectory.trajectory_point(i).path_point().y()<<std::endl;
+				double distance = pow((x0-planner->resultpath[i].getX()), 2) + pow((y0 -planner->resultpath[i].getY()), 2);
+				//std::cout<< "index:"<<i<<" y is "<<planner->resultpath[i].getY()<<std::endl;
 				if (distance < min_distance)
 				{
 					min_distance = distance;
@@ -86,19 +86,19 @@ namespace HybridAStar
 			index = index + 1;
 			std::cout << " index is " << index << "  size is" << size<<std::endl;
             //target_tracking_trajectory.trajectory_point(0).path_point().theta()    为第0个轨迹点的航向角，东为0，-pi~+pi
-			head_angle0 = localization->pose().heading() -target_tracking_trajectory.trajectory_point(index - 1).path_point().theta(); //车辆的航向角 减去 最近轨迹点的航向角
+			head_angle0 = localization->pose().heading() - planner->resultpath[index-1].getT(); //车辆的航向角 减去 最近轨迹点的航向角
 			std::cout << " vehicle heading angle: " << std::setprecision(12) << localization->pose().heading()<<std::endl;
-			std::cout << " point  heading angle:" << std::setprecision(12) <<target_tracking_trajectory.trajectory_point(index - 1).path_point().theta()<<std::endl;
+			std::cout << " point  heading angle:" << std::setprecision(12) << planner->resultpath[index-1].getT()<<std::endl;
 			std::cout << " vehicle heading angle-point heading angle " << head_angle0<<std::endl;
 			//保证index代表的轨迹点肯定在车辆位置之后,所以之后要循迹的轨迹点是从index：size   但最近的的轨迹点的索引还是index-1
-			std::cout << " the nearset point position x0 " << std::setprecision(12) <<target_tracking_trajectory.trajectory_point(index - 1).path_point().x()<<std::endl;
-			std::cout << " the nearset point position yo " << std::setprecision(12) <<target_tracking_trajectory.trajectory_point(index - 1).path_point().y()<<std::endl;
-			std::cout << " the nearset point+1 position x0 " << std::setprecision(12) <<target_tracking_trajectory.trajectory_point(index).path_point().x()<<std::endl;
-			std::cout << " the nearset point+1 position yo " << std::setprecision(12) <<target_tracking_trajectory.trajectory_point(index).path_point().y()<<std::endl;
+			std::cout << " the nearset point position x0 " << std::setprecision(12) << planner->resultpath[index-1].getX()<<std::endl;
+			std::cout << " the nearset point position yo " << std::setprecision(12) <<planner->resultpath[index-1].getY()<<std::endl;
+			std::cout << " the nearset point+1 position x0 " << std::setprecision(12) <<planner->resultpath[index].getX()<<std::endl;
+			std::cout << " the nearset point+1 position yo " << std::setprecision(12) <<planner->resultpath[index].getY()<<std::endl;
 			if (index - 2 >= 0)
 			{
-				std::cout << " the nearset point-1 position x0 " << std::setprecision(12) <<target_tracking_trajectory.trajectory_point(index - 2).path_point().x()<<std::endl;
-				std::cout << " the nearset point-1 position yo " << std::setprecision(12) <<target_tracking_trajectory.trajectory_point(index - 2).path_point().y()<<std::endl;
+				std::cout << " the nearset point-1 position x0 " << std::setprecision(12) <<planner->resultpath[index-2].getX()<<std::endl;
+				std::cout << " the nearset point-1 position yo " << std::setprecision(12) <<planner->resultpath[index-2].getY()<<std::endl;
 			}
 			//定义要循迹的轨迹信息,其中车辆信息为第0个点,其余信息为后面的轨迹点
 			double nearest_trajectory_info_lat_position_tar[101];
@@ -111,11 +111,11 @@ namespace HybridAStar
 			double nearest_trajectory_info_relative_time[101];
 			double nearest_trajectory_info_kappa[100];
 			//求初始横向误差（车相对于轨迹的横向误差
-			double dx = x0 -target_tracking_trajectory.trajectory_point(index - 1).path_point().x();
-			double dy = y0 -target_tracking_trajectory.trajectory_point(index - 1).path_point().y();
-			double lateral_error0 = dy*std::cos(target_tracking_trajectory.trajectory_point(index - 1).path_point().theta()) - dx * std::sin(target_tracking_trajectory.trajectory_point(index - 1).path_point().theta());
+			double dx = x0 -planner->resultpath[index-1].getX();
+			double dy = y0 -planner->resultpath[index-1].getY();
+			double lateral_error0 = dy*std::cos(planner->resultpath[index-1].getT()) - dx * std::sin(planner->resultpath[index-1].getT());
 			
-			std::cout<<" the lateralerroe0 and point heta " << std::setprecision(12) << lateral_error0 << "  " << std::setprecision(12) <<target_tracking_trajectory.trajectory_point(index - 1).path_point().theta()<<std::endl;
+			std::cout<<" the lateralerroe0 and point heta " << std::setprecision(12) << lateral_error0 << "  " << std::setprecision(12) <<planner->resultpath[index-1].getT()<<std::endl;
 
 			///////////////////////////////////////////////////////////////////////////////////
 			nearest_trajectory_info_lat_position_tar[0] = lateral_error0; //这个是到轨迹的初始横向距离
@@ -123,11 +123,11 @@ namespace HybridAStar
 			nearest_trajectory_info_speed_tar[0] = v0;
 			std::cout<<"v0 is "<<v0<<" nearest_trajectory_info_speed_tar[0] is "<<nearest_trajectory_info_speed_tar[0]<<std::endl;
 			//target_tracking_trajectory.trajectory_point(index - 1).path_point().kappa() 为该轨迹点的曲率
-			nearest_trajectory_info_kappa[0] =target_tracking_trajectory.trajectory_point(index - 1).path_point().kappa();
+			nearest_trajectory_info_kappa[0] =planner->path_curvature[index-1];
 
 			//计算nearest_trajectory_info_lon_position_tar[0],即车辆在轨迹中的累积S
 			nearest_trajectory_info_s[0] = pow((
-												   pow((x0 -target_tracking_trajectory.trajectory_point(index).path_point().x()), 2) + pow((y0 -target_tracking_trajectory.trajectory_point(index).path_point().y()), 2) - lateral_error0 * lateral_error0),
+												   pow((x0 -planner->resultpath[index].getX()), 2) + pow((y0 -planner->resultpath[index].getY()), 2) - lateral_error0 * lateral_error0),
 											   0.5);
 			std::cout << " nearest_trajectory_info_s[0] " << std::setprecision(12) << nearest_trajectory_info_s[0]<<std::endl;
 			//第一个轨迹点的s值为0，target_tracking_trajectory.trajectory_point(index).path_point().s()为相对于第一个轨迹点的累积距离
@@ -149,7 +149,7 @@ namespace HybridAStar
 				if (target_tracking_trajectory.trajectory_point(i).relative_time() - nearest_trajectory_info_relative_time[j] >= time_interval)
 				{
 					nearest_trajectory_info_lon_position_tar[j + 1] =target_tracking_trajectory.trajectory_point(i).path_point().s();
-					nearest_trajectory_info_speed_tar[j + 1] =target_tracking_trajectory.trajectory_point(i).v();
+					nearest_trajectory_info_speed_tar[j + 1] =planner->path_speed[i];
 					;
 					nearest_trajectory_info_relative_time[j + 1] =target_tracking_trajectory.trajectory_point(i).relative_time();
 					nearest_trajectory_info_time_tar[j] = nearest_trajectory_info_relative_time[j + 1] - nearest_trajectory_info_relative_time[j];

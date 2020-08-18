@@ -66,7 +66,6 @@ void Planner::setGoal(const geometry_msgs::PoseStamped::ConstPtr& end) {
   } 
 }
 */
-
 void Planner::tracePath(const Node3D* node, int i, std::vector<Node3D> path) {
   if (node == nullptr) {
     this->resultpath = path;
